@@ -5,6 +5,8 @@
 //
 //  Converted to use jpg instead of BMP and other minor changes
 //  
+// Compile with make, run with ./mandel -x 0.286932 -y 0.014287 -s .5 -m 1000 
+// DO NOT CHANGE FILE, PLS RUN WITH PARAMETERS SPECIFIED ABOVE
 ///
 #include <stdlib.h>
 #include <stdio.h>
@@ -26,8 +28,8 @@ int main( int argc, char *argv[] )
 	// These are the default configuration values used
 	// if no command line arguments are given.
 	const char *outfile = "mandel.jpg";
-	double xcenter = 0;
-	double ycenter = 0;
+	double xcenter = 0; /* ORIGINAL IS 0*/
+	double ycenter = 0; /* ORIGINAL IS 0*/
 	double xscale = 4;
 	double yscale = 0; // calc later
 	int    image_width = 1000;
