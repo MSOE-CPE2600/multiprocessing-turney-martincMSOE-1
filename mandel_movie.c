@@ -1,5 +1,5 @@
 /******************************************************************************
- * File mandel_movie.c
+ * File mandel_movie.c Assignment: Lab 11 (Multiprocessing)
  * Description: Will fork() and invoke mandel a number of times
  *              based off of the number passed into the command line
  * Author: Chris Martin
@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
     int processes = 1;
     int num_frames = 50; // set to 50 for now, can change to dynamic frame number later
 
-    /* Terminal line parsing */
+    /* Terminal input parsing */
     while ((c = getopt(argc, argv, "p:n:")) != -1) {
         switch (c) {
         case 'p':
@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
         processes = 50;
     }
 
-    /* Parameters for zoom */
+    /* Parameters for zoom (MAKE SURE TO MATCH MANDEL.C)*/
     double x_center = 0.286932;
     double y_center = 0.014287;
     double scale    = 0.5;    // initial scale
