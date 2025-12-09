@@ -4,7 +4,9 @@
  *              based off of the number passed into the command line
  * Author: Chris Martin
  * Last edit Date: 11/19/25
- * Compile with make, run with ./movie -p (# of processes) -n (# of frames)
+ * Compile with make, run with ./movie -p (# of processes) -t (# of threads)
+ * ex: ./movie -p 20 -t 10 & ffmpeg -i mandel%d.jpg mandel.mpg for movie
+ * 
  *****************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,15 +18,19 @@ int main(int argc, char *argv[]) {
     char c;
     int processes = 1;
     int num_frames = 50; // set to 50 for now, can change to dynamic frame number later
+    int num_threads = 1; // min 1, max 20
 
     /* Terminal input parsing */
-    while ((c = getopt(argc, argv, "p:n:")) != -1) {
+    while ((c = getopt(argc, argv, "p:t:")) != -1) {
         switch (c) {
         case 'p':
             processes = atoi(optarg);
             break;
-        case 'n':
-            num_frames = atoi(optarg);
+        // case 'n':
+        //     num_frames = atoi(optarg);
+        //     break;
+        case 't':
+            num_threads = atoi(optarg);
             break;
         default:
             fprintf(stderr, "========= MOVIE PARSING ERROR, EXITING PROGRAM =========\n");
@@ -34,15 +40,20 @@ int main(int argc, char *argv[]) {
     }
 
     /* Parsing Error Checking */
-    if (processes < 1) {
+    // if (processes < 1 ) {
+    //     fprintf(stderr, "Number of Processes must be >= 1\n");
+    //     return EXIT_FAILURE;
+    // }
+    if (processes > 50  || processes < 1) { // default to 25 frames if excedes 
         fprintf(stderr, "Number of Processes must be >= 1\n");
-        return EXIT_FAILURE;
+        processes = 25;
     }
-    if (processes > 50) { // default to 50 frames if excedes 
-        processes = 50;
+    if (num_threads > 20 || num_threads < 1) {
+        fprintf(stderr, "Number of Threads must be >= 1 or <= 20\n");
+        num_threads = 10;
     }
 
-    /* Parameters for zoom (MAKE SURE TO MATCH MANDEL.C)*/
+    /* Parameters for zoom (MAKE SURE TO MATCH MANDEL.C) */
     double x_center = 0.286932;
     double y_center = 0.014287;
     double scale    = 0.5;    // initial scale
@@ -63,15 +74,11 @@ int main(int argc, char *argv[]) {
         if (pid == 0) { /* Child process to parse args and call mandel n times*/
             
 
-            char x_str[32], y_str[32], s_str[32], out_str[64];
-            // snprintf(x_str, sizeof(x_str), "%f", x_center);
-            // snprintf(y_str, sizeof(y_str), "%f", y_center);
-            // snprintf(s_str, sizeof(s_str), "%f", scale);
-            // snprintf(out_str, sizeof(out_str), "mandel%d.jpg", frame);
-
+            char x_str[32], y_str[32], s_str[32], t_str[32], out_str[64];
             sprintf(x_str, "%f", x_center); 
             sprintf(y_str, "%f", y_center); 
             sprintf(s_str, "%f", scale); 
+            sprintf(t_str, "%d", num_threads); 
             sprintf(out_str, "mandel%d.jpg", i); 
 
 
@@ -82,6 +89,7 @@ int main(int argc, char *argv[]) {
                   "-m", "1000",
                   "-W", "1000",
                   "-H", "1000",
+                  "-t", t_str,
                   "-o", out_str,
                   (char *) NULL);
 
